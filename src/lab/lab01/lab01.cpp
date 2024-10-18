@@ -5,18 +5,15 @@
 using namespace std;
 using namespace lab;
 
-Lab01::Lab01()
-{
+Lab01::Lab01() {
     window->SetSize(1280, 720);
 }
 
 
-Lab01::~Lab01()
-{
+Lab01::~Lab01() {
 }
 
-void Lab01::Initialize()
-{
+void Lab01::Initialize() {
     Exercise1();
     Exercise2();
     Exercise3();
@@ -25,13 +22,12 @@ void Lab01::Initialize()
     Exercise6();
 }
 
-void Lab01::Exercise1()
-{
+void Lab01::Exercise1() {
     SetExercise();
 
     //TODO(student): Ex. 1
     {
-        SetPanel("1", { -3, -2, 100 }, { 0, 0, 1280, 720 });
+        SetPanel("1", {-3, -2, 100}, {0, 0, 1280, 720});
 
         glm::vec2 v1(5, 2);
         glm::vec2 v2(2, 3);
@@ -49,13 +45,12 @@ void Lab01::Exercise1()
     }
 }
 
-void Lab01::Exercise2()
-{
+void Lab01::Exercise2() {
     SetExercise();
 
     //TODO(student): Ex. 2
     {
-        SetPanel("2", { -7, -5, 75 }, { 0, 0, 1280, 720 });
+        SetPanel("2", {-7, -5, 75}, {0, 0, 1280, 720});
 
         {
             glm::vec2 p1(1, 1);
@@ -103,13 +98,12 @@ void Lab01::Exercise2()
     }
 }
 
-void Lab01::Exercise3()
-{
+void Lab01::Exercise3() {
     SetExercise();
 
     //TODO(student): Ex. 3
     {
-        SetPanel("3", { -7, -5, 75 }, { 0, 0, 1280, 720 });
+        SetPanel("3", {-7, -5, 75}, {0, 0, 1280, 720});
 
         glm::vec2 v1(4, 3);
         glm::vec2 v2(-3, 3);
@@ -131,13 +125,12 @@ void Lab01::Exercise3()
     }
 }
 
-void Lab01::Exercise4()
-{
-    SetExercise ();
+void Lab01::Exercise4() {
+    SetExercise();
 
     //TODO(student): Ex. 4
     {
-        SetPanel("4", { -3, -2, 100 }, { 0, 0, 1280, 720 });
+        SetPanel("4", {-3, -2, 100}, {0, 0, 1280, 720});
 
         glm::vec2 v1(4, 1.5);
         glm::vec2 v2(2, 3);
@@ -158,7 +151,7 @@ void Lab01::Exercise4()
     }
 }
 
-static float triangleArea(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3) {
+static float triangleArea(const glm::vec2 &p1, const glm::vec2 &p2, const glm::vec2 &p3) {
     auto s1 = glm::length(p1 - p2);
     auto s2 = glm::length(p2 - p3);
     auto s3 = glm::length(p3 - p1);
@@ -166,13 +159,12 @@ static float triangleArea(const glm::vec2& p1, const glm::vec2& p2, const glm::v
     return std::sqrt(s * (s - s1) * (s - s2) * (s - s3));
 }
 
-void Lab01::Exercise5()
-{
+void Lab01::Exercise5() {
     SetExercise();
 
     //TODO(student): Ex. 5
     {
-        SetPanel("5", { -7, -5, 75 }, { 0, 0, 1280, 720 });
+        SetPanel("5", {-7, -5, 75}, {0, 0, 1280, 720});
 
         {
             glm::vec2 p1(1, 1);
@@ -231,13 +223,12 @@ void Lab01::Exercise5()
 }
 
 
-void Lab01::Exercise6()
-{
+void Lab01::Exercise6() {
     SetExercise();
 
     //TODO(student): Ex. 6
     {
-        SetPanel("6", { -7, -5, 75 }, { 0, 0, 1280, 720 });
+        SetPanel("6", {-7, -5, 75}, {0, 0, 1280, 720});
 
         glm::vec2 p1(-4, 3);
         glm::vec2 p2(6, 2);
@@ -250,16 +241,16 @@ void Lab01::Exercise6()
         RenderPoint(p3, glm::vec3(0, 0, 1), "P3");
 
         std::vector<glm::vec2> check_points{
-            glm::vec2(1, 1), glm::vec2(3.21, 3.2),
-            glm::vec2(-2.16, 2.9), glm::vec2(2, -2),
-            glm::vec2(-1.1, -0.9), glm::vec2(-1.9, 2.1),
-            glm::vec2(-4, 0), glm::vec2(-4, -2.5),
-            glm::vec2(4.5, 1.1), glm::vec2(5.9, -3.1),
-            glm::vec2(7.1, 1.9), glm::vec2(-5.9, 1.5)
+                glm::vec2(1, 1), glm::vec2(3.21, 3.2),
+                glm::vec2(-2.16, 2.9), glm::vec2(2, -2),
+                glm::vec2(-1.1, -0.9), glm::vec2(-1.9, 2.1),
+                glm::vec2(-4, 0), glm::vec2(-4, -2.5),
+                glm::vec2(4.5, 1.1), glm::vec2(5.9, -3.1),
+                glm::vec2(7.1, 1.9), glm::vec2(-5.9, 1.5)
         };
 
         auto testArea = triangleArea(p1, p2, p3);
-        for (const glm::vec2 &check_point : check_points) {
+        for (const glm::vec2 &check_point: check_points) {
             auto area1 = triangleArea(check_point, p2, p3);
             auto area2 = triangleArea(p1, check_point, p3);
             auto area3 = triangleArea(p1, p2, check_point);
