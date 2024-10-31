@@ -48,7 +48,7 @@ void Lab02::Initialize()
         std::vector<unsigned int> indices;
         std::vector<VertexFormat> vertices;
 
-        const int VertexNo = 24;
+        const int VertexNo = 12;
         auto angleDelta = 2 * glm::pi<float>() / VertexNo;
 
         auto x0 = circleX + radius * cos(0 * angleDelta);
@@ -62,7 +62,7 @@ void Lab02::Initialize()
 
             vertices.push_back({vertexPos, glm::vec3(0.12f, 0.25f, 0.8f)});
         }
-        vertices.push_back({{circleX, circleY, 1}, glm::vec3(0.12f, 0.25f, 0.8f)});
+        vertices.push_back({{circleX, circleY, 1}, glm::vec3(0.8f, 0.12f, 0.25f)});
 
         std::cout << (-1 % VertexNo) << '\n';
         for (int i = 1; i <= VertexNo; i++) {
