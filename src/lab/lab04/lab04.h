@@ -33,7 +33,9 @@ namespace lab
         void Initialize() override;
 
      private:
+        void DrawShape();
         void DrawCube();
+        void DrawTetrahedron();
         glm::mat4 ModelTransformation();
         void Rasterize(
             const std::vector<VertexFormat> &vertices,

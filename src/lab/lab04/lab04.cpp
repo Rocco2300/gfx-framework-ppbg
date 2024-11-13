@@ -36,7 +36,7 @@ void Lab04::Initialize()
     image->Init(1280, 720, 3 /* channels */);
     depthImage->Init(1280, 720);
 
-    DrawCube();
+    DrawShape();
 }
 
 void Lab04::DrawCube()
@@ -77,6 +77,41 @@ void Lab04::DrawCube()
 
         Rasterize(vertices, indices, transformation, viewport_space, cull_face_option);
     }
+}
+
+void Lab04::DrawTetrahedron() {
+    vector<VertexFormat> vertices
+            {
+                    VertexFormat(glm::vec3(-0.5, -0.5, 0), glm::vec3(1, 0, 0)),
+                    VertexFormat(glm::vec3(0.5, -0.5, 0.5), glm::vec3(0, 1, 0)),
+                    VertexFormat(glm::vec3(0.5, -0.5, -0.5), glm::vec3(0, 0, 1)),
+                    VertexFormat(glm::vec3(0, 0.5, 0), glm::vec3(1, 0, 1)),
+            };
+
+    vector<unsigned int> indices
+            {
+                0, 2, 1,
+                0, 3, 1,
+                0, 3, 2,
+                1, 2, 3
+            };
+
+    {
+        glm::mat4 transformation = glm::mat3(1.0f);
+        transformation *= transform3D::Perspective(glm::radians(60.0f), 16.0f/9, 0.1f, 100.0f);
+        transformation *= transform3D::View(camera_position, camera_forward, camera_right, camera_up);
+        transformation *= ModelTransformation();
+
+        Rasterize(vertices, indices, transformation, viewport_space, cull_face_option);
+    }
+}
+
+void Lab04::DrawShape() {
+#if 0
+    DrawCube();
+#else
+    DrawTetrahedron();
+#endif
 }
 
 glm::mat4 Lab04::ModelTransformation()
@@ -211,7 +246,7 @@ void Lab04::OnInputUpdate(float deltaTime, int mods)
         image->Clear(glm::vec3(0));
         depthImage->Clear();
 
-        DrawCube();
+        DrawShape();
 
         image->UpdateInternalData();
     }
@@ -226,7 +261,7 @@ void Lab04::OnKeyPress(int key, int mods)
         image->Clear(glm::vec3(0));
         depthImage->Clear();
 
-        DrawCube();
+        DrawShape();
 
         image->UpdateInternalData();
     }
