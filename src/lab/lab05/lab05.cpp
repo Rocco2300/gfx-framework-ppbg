@@ -12,20 +12,18 @@
 using namespace std;
 using namespace lab;
 
-#define BONUS 1
+#define BONUS 0
 
 /*
  *  To find out more about `FrameStart`, `Update`, `FrameEnd`
  *  and the order in which they are called, see `world.cpp`.
  */
-static bool posSwitch{};
-static bool sclSwitch{};
+static float tempSine{};
 static glm::vec3 cubePos = glm::vec3(-1.5f, 0.5f, 0);
 static glm::vec3 cubeRot{};
 static glm::vec3 cubeScl = glm::vec3(0.5f, 0.5f, 0.5f);
 static glm::vec3 movingCubePos = glm::vec3(2.f, 0.5f, 0);
 
-static bool sunPosSwitch{};
 static float earthRot{};
 static float moonRot{};
 static glm::vec3 sunPos = glm::vec3(0, 0, 0);
@@ -149,19 +147,17 @@ void Lab05::FrameStart()
 
 void Lab05::Update(float deltaTimeSeconds)
 {
-    posSwitch = (cubePos.y >= 3.f) || cubePos.y > 0 && posSwitch;
-    cubePos.y += (posSwitch ? -1.f : 1.f) * deltaTimeSeconds * 2.f;
+    tempSine += deltaTimeSeconds;
+    cubePos.y = glm::sin(tempSine) * 1.5f + 1.5f;
 
     cubeRot.x += deltaTimeSeconds * 20.f;
     cubeRot.z += deltaTimeSeconds * 50.f;
 
-    sclSwitch = (cubeScl.x >= 2.f) || cubeScl.y > 0.5f && sclSwitch;
-    cubeScl.x += (sclSwitch ? -1.f : 1.f) * deltaTimeSeconds * 2.f;
-    cubeScl.y += (sclSwitch ? -1.f : 1.f) * deltaTimeSeconds * 2.f;
-    cubeScl.z += (sclSwitch ? -1.f : 1.f) * deltaTimeSeconds * 2.f;
+    cubeScl.x = glm::sin(tempSine) * 0.75f + 1.25f;
+    cubeScl.y = glm::sin(tempSine) * 0.75f + 1.25f;
+    cubeScl.z = glm::sin(tempSine) * 0.75f + 1.25f;
 
-    sunPosSwitch = (sunPos.y >= 1.f) || sunPos.y > -1.f && sunPosSwitch;
-    sunPos.y += (sunPosSwitch ? -1.f : 1.f) * deltaTimeSeconds * 2.f;
+    sunPos.y = glm::sin(tempSine);
 
     earthRot += 10.f * deltaTimeSeconds;
     moonRot += 100.f * deltaTimeSeconds;
@@ -174,9 +170,10 @@ void Lab05::Update(float deltaTimeSeconds)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     static auto camera = new gfxc::Camera();
-
+#if BONUS
     viewport_space = transform2D::ViewportSpace(0, 0, resolution.x, resolution.y);
     DrawObjects(GetSceneCamera(), viewport_space);
+#endif
 
 #if !BONUS
     viewport_space = transform2D::ViewportSpace(0, 0, resolution.x / 4 * 3, resolution.y / 2);
