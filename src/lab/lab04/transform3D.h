@@ -14,12 +14,6 @@ namespace transform3D
         //mat[3][0] = translateX;
         //mat[3][1] = translateY;
         //mat[3][2] = translateZ;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                std::cout << mat[i][j] << ' ';
-            }
-            std::cout << '\n';
-        }
         return mat;
     }
 
