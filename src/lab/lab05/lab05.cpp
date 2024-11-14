@@ -12,17 +12,23 @@
 using namespace std;
 using namespace lab;
 
+#define BONUS 1
 
 /*
  *  To find out more about `FrameStart`, `Update`, `FrameEnd`
  *  and the order in which they are called, see `world.cpp`.
  */
-bool posSwitch = false;
-bool sclSwitch = false;
+static bool posSwitch{};
+static bool sclSwitch{};
 static glm::vec3 cubePos = glm::vec3(-1.5f, 0.5f, 0);
 static glm::vec3 cubeRot{};
 static glm::vec3 cubeScl = glm::vec3(0.5f, 0.5f, 0.5f);
 static glm::vec3 movingCubePos = glm::vec3(2.f, 0.5f, 0);
+
+static bool sunPosSwitch{};
+static float earthRot{};
+static float moonRot{};
+static glm::vec3 sunPos = glm::vec3(0, 0, 0);
 
 Lab05::Lab05()
 {
@@ -154,6 +160,12 @@ void Lab05::Update(float deltaTimeSeconds)
     cubeScl.y += (sclSwitch ? -1.f : 1.f) * deltaTimeSeconds * 2.f;
     cubeScl.z += (sclSwitch ? -1.f : 1.f) * deltaTimeSeconds * 2.f;
 
+    sunPosSwitch = (sunPos.y >= 1.f) || sunPos.y > -1.f && sunPosSwitch;
+    sunPos.y += (sunPosSwitch ? -1.f : 1.f) * deltaTimeSeconds * 2.f;
+
+    earthRot += 10.f * deltaTimeSeconds;
+    moonRot += 100.f * deltaTimeSeconds;
+
     glm::ivec2 resolution = window->GetResolution();
 
     glClearColor(color.r, color.g, color.b, 1);
@@ -163,9 +175,10 @@ void Lab05::Update(float deltaTimeSeconds)
 
     static auto camera = new gfxc::Camera();
 
-    // TODO(student): Draw the objects 4 times in different viewports.
-    // Send the 4 cameras with predefined viewing positions and directions to the drawing.
+    viewport_space = transform2D::ViewportSpace(0, 0, resolution.x, resolution.y);
+    DrawObjects(GetSceneCamera(), viewport_space);
 
+#if !BONUS
     viewport_space = transform2D::ViewportSpace(0, 0, resolution.x / 4 * 3, resolution.y / 2);
     DrawObjects(GetSceneCamera(), viewport_space);
 
@@ -180,6 +193,7 @@ void Lab05::Update(float deltaTimeSeconds)
     camera->SetPositionAndRotation(glm::vec3(-3, 3, 3), glm::quatLookAt(glm::normalize(glm::vec3(3, -3, -3)), glm::vec3(0, 1, 0)));
     viewport_space = transform2D::ViewportSpace(resolution.x / 4 * 3, resolution.y / 4 * 3, resolution.x / 4, resolution.y / 4);
     DrawObjects(camera, viewport_space);
+#endif
 }
 
 
@@ -190,23 +204,29 @@ void Lab05::FrameEnd()
 
 void Lab05::DrawObjects(gfxc::Camera *camera, const transform2D::ViewportSpace & viewport_space)
 {
+#if !BONUS
+    DrawOriginalObjects(camera, viewport_space);
+#else
+    DrawBonusObjects(camera, viewport_space);
+#endif
+}
+
+void Lab05::DrawOriginalObjects(gfxc::Camera *camera, const transform2D::ViewportSpace &viewport_space) {
     glm::mat4 view = transform3D::View(
-        camera->m_transform->GetWorldPosition(),
-        camera->m_transform->GetLocalOZVector(),
-        camera->m_transform->GetLocalOXVector(),
-        camera->m_transform->GetLocalOYVector()
+            camera->m_transform->GetWorldPosition(),
+            camera->m_transform->GetLocalOZVector(),
+            camera->m_transform->GetLocalOXVector(),
+            camera->m_transform->GetLocalOYVector()
     );
 
     glm::mat4 projection = transform3D::Perspective(
-        glm::radians(60.0f), (float)viewport_space.width / viewport_space.height, 0.1f, 100.0f
+            glm::radians(60.0f), (float)viewport_space.width / viewport_space.height, 0.1f, 100.0f
     );
 
     glEnable(GL_CULL_FACE);
 
     glCullFace(cullFace);
 
-    // TODO(student): Set the position and size of the view port based on the
-    // information received from the 'viewport_space' parameter.
     glViewport(viewport_space.x, viewport_space.y, viewport_space.width, viewport_space.height);
 
     glm::mat4 model = glm::mat4(1);
@@ -240,6 +260,40 @@ void Lab05::DrawObjects(gfxc::Camera *camera, const transform2D::ViewportSpace &
     glDisable(GL_CULL_FACE);
 
     DrawCoordinateSystem(view, projection);
+}
+
+void Lab05::DrawBonusObjects(gfxc::Camera *camera, const transform2D::ViewportSpace &viewport_space) {
+    glm::mat4 view = transform3D::View(
+            camera->m_transform->GetWorldPosition(),
+            camera->m_transform->GetLocalOZVector(),
+            camera->m_transform->GetLocalOXVector(),
+            camera->m_transform->GetLocalOYVector()
+    );
+
+    glm::mat4 projection = transform3D::Perspective(
+            glm::radians(60.0f), (float)viewport_space.width / viewport_space.height, 0.1f, 100.0f
+    );
+
+    glEnable(GL_CULL_FACE);
+
+    glCullFace(cullFace);
+
+    glViewport(viewport_space.x, viewport_space.y, viewport_space.width, viewport_space.height);
+
+    glm::mat4 model = glm::mat4(1);
+    model *= transform3D::Translate(sunPos);
+    model *= transform3D::Scale(glm::vec3(1.f));
+    RenderMesh(meshes["cube"], shaders["VertexColor"], model, view, projection);
+
+    model *= transform3D::RotateOZ(glm::radians(earthRot));
+    model *= transform3D::Translate(glm::vec3(2, 0, 0));
+    model *= transform3D::Scale(glm::vec3(0.5f));
+    RenderMesh(meshes["cube"], shaders["VertexColor"], model, view, projection);
+
+    model *= transform3D::RotateOZ(glm::radians(moonRot));
+    model *= transform3D::Translate(glm::vec3(1, 0, 0));
+    model *= transform3D::Scale(glm::vec3(0.5f));
+    RenderMesh(meshes["cube"], shaders["VertexColor"], model, view, projection);
 }
 
 void Lab05::RenderMesh(Mesh * mesh, Shader * shader, const glm::mat4 & modelMatrix,

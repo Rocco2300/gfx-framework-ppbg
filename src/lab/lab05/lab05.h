@@ -18,6 +18,8 @@ namespace lab
 
      private:
         void CreateMesh(const char *name, const std::vector<VertexFormat> &vertices, const std::vector<unsigned int> &indices);
+        void DrawOriginalObjects(gfxc::Camera* camera, const transform2D::ViewportSpace& viewport_space);
+        void DrawBonusObjects(gfxc::Camera* camera, const transform2D::ViewportSpace& viewport_space);
         void DrawObjects(gfxc::Camera *camera, const transform2D::ViewportSpace &viewport_space);
 
         void FrameStart() override;
