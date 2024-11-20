@@ -80,26 +80,32 @@ void Lab06::Init()
 
 void Lab06::CreateShader(const char* name, const char* vertex_shader_path, const char* fragment_shader_path)
 {
-    unsigned int vertex_shader_id = 0;
+    unsigned int vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
     // TODO(student): Create and compile the vertex shader object
 
     const char *vertex_shader_source = GetShaderContent(vertex_shader_path);
 
+    glShaderSource(vertex_shader_id, 1, &vertex_shader_source, nullptr);
+    glCompileShader(vertex_shader_id);
 
     CheckShaderCompilationError(vertex_shader_id);
 
-    unsigned int fragment_shader_id = 0;
+    unsigned int fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
     // TODO(student): Create and compile the fragment shader object
 
     const char *fragment_shader_source = GetShaderContent(fragment_shader_path);
 
+    glShaderSource(fragment_shader_id, 1, &fragment_shader_source, nullptr);
+    glCompileShader(fragment_shader_id);
 
     CheckShaderCompilationError(fragment_shader_id);
 
-    unsigned int program_id = 0;
+    unsigned int program_id = glCreateProgram();
     // TODO(student): Create the program, attach the two shader
     // objects and link them.
-
+    glAttachShader(program_id, vertex_shader_id);
+    glAttachShader(program_id, fragment_shader_id);
+    glLinkProgram(program_id);
 
     CheckShadersLinkingError(program_id);
 
@@ -230,6 +236,7 @@ void Lab06::RenderMesh(Mesh *mesh, Shader *shader, const glm::mat4 & model,
     // TODO(student): Get shader location for uniform mat4 "Model"
 
     // TODO(student): Set shader uniform "Model" to modelMatrix
+    glUniformMatrix4fv(glGetUniformLocation(shader->program, "Model"), 1, false, glm::value_ptr(model));
 
     // TODO(student): Get shader location for uniform mat4 "View"
 
@@ -241,12 +248,16 @@ void Lab06::RenderMesh(Mesh *mesh, Shader *shader, const glm::mat4 & model,
         camera->m_transform->GetLocalOYVector()
     );
 
+    glUniformMatrix4fv(glGetUniformLocation(shader->program, "View"), 1, false, glm::value_ptr(view));
+
     // TODO(student): Get shader location for uniform mat4 "Projection"
 
     // TODO(student): Set shader uniform "Projection" to projectionMatrix
     glm::mat4 projection = transform3D::Perspective(
         glm::radians(60.0f), (float)viewport_space.width / viewport_space.height, 0.1f, 100.0f
     );
+
+    glUniformMatrix4fv(glGetUniformLocation(shader->program, "Projection"), 1, false, glm::value_ptr(projection));
 
     // TODO(student): Send the application time, obtained by
     // calling Engine::GetElapsedTime(), in the form of a
