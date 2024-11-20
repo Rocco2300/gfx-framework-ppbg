@@ -213,7 +213,7 @@ void Lab06::Update(float deltaTimeSeconds)
         glm::mat4 model = glm::mat4(1);
         model *= transform3D::Translate(glm::vec3(2, 0.5f, 0));
         model *= transform3D::RotateOX(glm::radians(60.0f));
-        RenderMesh(meshes["cube"], shaders["LabShader"], model, GetSceneCamera(), viewport_space);
+        RenderMesh(meshes["cube"], shaders["LastTask"], model, GetSceneCamera(), viewport_space);
     }
 }
 
@@ -262,6 +262,8 @@ void Lab06::RenderMesh(Mesh *mesh, Shader *shader, const glm::mat4 & model,
     // TODO(student): Send the application time, obtained by
     // calling Engine::GetElapsedTime(), in the form of a
     // uniform type attribute to the shader
+    auto time = Engine::GetElapsedTime();
+    glUniform1f(glGetUniformLocation(shader->program, "time"), time);
 
     // Draw the object
     glBindVertexArray(mesh->GetBuffers()->m_VAO);
