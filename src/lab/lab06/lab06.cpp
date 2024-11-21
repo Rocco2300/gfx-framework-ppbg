@@ -15,7 +15,6 @@ using namespace lab;
  *  and the order in which they are called, see `world.cpp`.
  */
 
-
 Lab06::Lab06()
 {
 }
@@ -199,6 +198,8 @@ void Lab06::Update(float deltaTimeSeconds)
         model *= transform3D::Translate(glm::vec3(-2, 0.5f, 0));
         model *= transform3D::RotateOX(glm::radians(60.0f));
         model *= transform3D::RotateOY(glm::radians(60.0f));
+        glUseProgram(shaders["LabShader"]->program);
+        glUniform1i(glGetUniformLocation(shaders["LabShader"]->program, "bonus"), 1);
         RenderMesh(meshes["sphere"], shaders["LabShader"], model, GetSceneCamera(), viewport_space);
     }
 
@@ -206,6 +207,7 @@ void Lab06::Update(float deltaTimeSeconds)
         glm::mat4 model = glm::mat4(1);
         model *= transform3D::Translate(glm::vec3(0, 1, 0));
         model *= transform3D::RotateOY(glm::radians(45.0f));
+        glUniform1i(glGetUniformLocation(shaders["LabShader"]->program, "bonus"), 0);
         RenderMesh(meshes["cube"], shaders["LabShader"], model, GetSceneCamera(), viewport_space);
     }
 
@@ -213,6 +215,7 @@ void Lab06::Update(float deltaTimeSeconds)
         glm::mat4 model = glm::mat4(1);
         model *= transform3D::Translate(glm::vec3(2, 0.5f, 0));
         model *= transform3D::RotateOX(glm::radians(60.0f));
+        glUniform1i(glGetUniformLocation(shaders["LabShader"]->program, "bonus"), 0);
         RenderMesh(meshes["cube"], shaders["LastTask"], model, GetSceneCamera(), viewport_space);
     }
 }
