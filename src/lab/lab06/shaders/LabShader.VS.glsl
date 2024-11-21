@@ -36,11 +36,11 @@ void main()
     }
     else
     {
-        vec2 p = position.xy + vec2(time * 70);
+        vec2 p = position.xy;
         float r = rand(p) * 0.5 + 0.5;
-        scale[0][0] = scale[0][0] * r;
-        scale[1][1] = scale[1][1] * r;
-        scale[2][2] = scale[2][2] * r;
+        scale[0][0] = scale[0][0] * (sin(r * 20 + time) * 0.25 + 1);
+        scale[1][1] = scale[1][1] * (sin(r * 20 + time) * 0.25 + 1);
+        scale[2][2] = scale[2][2] * (sin(r * 20 + time) * 0.25 + 1);
     }
 
     // TODO(student): Compute gl_Position
