@@ -200,15 +200,27 @@ void Lab07::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 & model
     // sources, directions of the spot light sources and angles for the
     // spot light sources) in attributes of uniform type. Use the attributes
     // defined in "lab07.h". Send 10 entities of each.
+    glUniform1f(glGetUniformLocation(shader->program, "point_lights_count"), 10.f);
+    glUniform3fv(glGetUniformLocation(shader->program, "point_light_positions"), 10, glm::value_ptr(point_light_positions[0]));
+    glUniform3fv(glGetUniformLocation(shader->program, "point_light_colors"), 10, glm::value_ptr(point_light_colors[0]));
+    glUniform3fv(glGetUniformLocation(shader->program, "spot_light_positions"), 10, glm::value_ptr(spot_light_positions[0]));
+    glUniform3fv(glGetUniformLocation(shader->program, "spot_light_colors"), 10, glm::value_ptr(spot_light_colors[0]));
+    glUniform3fv(glGetUniformLocation(shader->program, "spot_light_directions"), 10, glm::value_ptr(spot_light_directions[0]));
+    glUniform1fv(glGetUniformLocation(shader->program, "spot_light_angles"), 10, &spot_light_angles[0]);
 
     glm::vec3 eye_position = GetSceneCamera()->m_transform->GetWorldPosition();
     // TODO(student): Set eye position (camera position) uniform
+    glUniform3fv(glGetUniformLocation(shader->program, "eye_position"), 1, glm::value_ptr(eye_position));
 
     glm::vec3 material_ka = object_color;
     glm::vec3 material_kd = object_color;
     glm::vec3 material_ks = object_color;
     int material_shininess = 30;
     // TODO(student): Set material property uniforms (shininess, ka, kd, ks)
+    glUniform3fv(glGetUniformLocation(shader->program, "material_ka"), 1, glm::value_ptr(material_ka));
+    glUniform3fv(glGetUniformLocation(shader->program, "material_kd"), 1, glm::value_ptr(material_kd));
+    glUniform3fv(glGetUniformLocation(shader->program, "material_ks"), 1, glm::value_ptr(material_ks));
+    glUniform1i(glGetUniformLocation(shader->program, "material_shininess"), material_shininess);
 
     // Send the model matrix uniform
     GLint loc_model_matrix = glGetUniformLocation(shader->program, "Model");
