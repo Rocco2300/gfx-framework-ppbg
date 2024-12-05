@@ -151,6 +151,16 @@ void Lab07::Update(float deltaTimeSeconds)
         RenderSimpleMesh(meshes["bunny"], shaders["LabShader"], model, glm::vec3(0, 1, 1));
     }
 
+    {
+        glm::mat4 model = glm::mat4(1);
+        model = glm::translate(model, glm::vec3(0, 1, 1));
+        glUseProgram(shaders["LabShader"]->program);
+        glUniform1i(glGetUniformLocation(shaders["LabShader"]->program, "bonus"), 1);
+        glUniform1f(glGetUniformLocation(shaders["LabShader"]->program, "time"), Engine::GetElapsedTime());
+        RenderSimpleMesh(meshes["box"], shaders["LabShader"], model, glm::vec3(0, 1, 1));
+        glUniform1i(glGetUniformLocation(shaders["LabShader"]->program, "bonus"), 0);
+    }
+
     // Render ground
     {
         glm::mat4 model = glm::mat4(1);

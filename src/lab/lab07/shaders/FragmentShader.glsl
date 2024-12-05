@@ -1,9 +1,12 @@
 #version 330
 
+#define M_PI 3.1415926535897932384626433832795
+
 // Input
 // TODO(student): Get color value from vertex shader
 in vec3 world_position;
 in vec3 world_normal;
+in vec2 uv_coord;
 
 // Uniforms for light properties
 uniform float point_lights_count;
@@ -18,21 +21,27 @@ uniform vec3 material_ka;
 uniform vec3 material_kd;
 uniform vec3 material_ks;
 uniform int material_shininess;
+uniform int bonus;
+uniform float time;
 
 // Output
 layout(location = 0) out vec4 out_color;
+
+vec3 ka;
+vec3 kd;
+vec3 ks;
 
 vec3 ComputePhongIllumination(vec3 light_position, vec3 light_color)
 {
     // TODO(student): Compute the diffuse component of the Lambert illumination model
     vec3 N = normalize(world_normal);
     vec3 L = normalize(light_position - world_position);
-    vec3 diffuse_component = material_kd * light_color * max(dot(N, L), 0);
+    vec3 diffuse_component = kd * light_color * max(dot(N, L), 0);
 
     // TODO(student): Compute the specular component of the Phong illumination model
     vec3 V = normalize(eye_position - world_position);
     vec3 R = reflect(-L, N);
-    vec3 specular_component = material_ks * light_color * pow(max(dot(V, R), 0), material_shininess);
+    vec3 specular_component = ks * light_color * pow(max(dot(V, R), 0), material_shininess);
 
     if (length(diffuse_component) > 0)
     {
@@ -50,7 +59,7 @@ float ComputeDistanceAttenuation(vec3 light_position, vec3 point_position)
     // TODO(student): Compute the light attenuation factor based on the distance
     // between the position of the illuminated point and the position of the light source.
     float d = distance(light_position, point_position);
-    return 1.0 / (d * d + 1);
+    return 1.0 / (d * d + 1.0);
 }
 
 vec3 ComputePointLightSourcesIllumination()
@@ -111,13 +120,34 @@ vec3 ComputeAmbientComponent()
     vec3 global_ambient_color = vec3(0.25f);
 
     // TODO(student): Compute the ambient component of global illumination
-    vec3 ambient_component = material_ka * global_ambient_color;
+    vec3 ambient_component = ka * global_ambient_color;
 
     return ambient_component;
 }
 
 void main()
 {
+    if (bonus == 1) {
+        vec2 uv = uv_coord;
+        uv = uv * 2 - 1;
+
+        float d = length(uv);
+        d -= 0.3;
+
+        float anim = sin(2 * time) * 0.25 + 0.25;
+        //float anim = (2.0 / M_PI) * (asin(sin(2 * time))) * 0.25 + 0.25;
+        d = step(anim, d);
+
+        ka = vec3(1, d, 0);
+        ks = vec3(1, d, 0);
+        kd = vec3(1, d, 0);
+    }
+    else {
+        ka = material_ka;
+        ks = material_ks;
+        kd = material_kd;
+    }
+
     vec3 illumination = ComputePointLightSourcesIllumination()
         + ComputeSpotLightSourcesIllumination ()
         + ComputeAmbientComponent();
