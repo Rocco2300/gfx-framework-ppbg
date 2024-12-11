@@ -14,6 +14,7 @@ uniform mat4 Projection;
 // Output
 out vec2 texture_coord;
 
+
 void main()
 {
     // TODO(student): Pass v_texture_coord as output to fragment shader

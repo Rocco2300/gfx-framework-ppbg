@@ -92,9 +92,9 @@ void Lab08::Init()
         vector<glm::vec2> textureCoords
         {
             // TODO(student): Specify the texture coordinates for the square
-            glm::vec2(0.0f, 0.0f),  // top right
-            glm::vec2(0.0f, 0.0f),  // bottom right
-            glm::vec2(0.0f, 0.0f),  // bottom left
+            glm::vec2(1.0f, 0.0f),  // top right
+            glm::vec2(1.0f, 1.0f),  // bottom right
+            glm::vec2(0.0f, 1.0f),  // bottom left
             glm::vec2(0.0f, 0.0f)   // top left
         };
 
@@ -119,6 +119,9 @@ void Lab08::Init()
 
     // TODO(student): Load other shaders
     LoadShader("LabShader");
+    LoadShader("LabShader03");
+    LoadShader("LabShader04");
+    LoadShader("LabShader05");
 }
 
 Texture2D* Lab08::LoadTexture(const char* imagePath)
@@ -136,15 +139,18 @@ Texture2D *Lab08::CreateTexture(unsigned int width, unsigned int height,
     unsigned int size = width * height * channels;
 
     // TODO(student): Generate and bind the new texture ID
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
 
     if (GLEW_EXT_texture_filter_anisotropic) {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4);
     }
     // TODO(student): Set the texture parameters (MIN_FILTER and MAG_FILTER) using glTexParameteri
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     CheckOpenGLError();
-
 
     // TODO(student): Use the "glTexImage2D" directive to load the information
     // into the graphics processor's memory. Use the correct format based on
@@ -153,8 +159,20 @@ Texture2D *Lab08::CreateTexture(unsigned int width, unsigned int height,
     //   - 2 color channels - GL_RG
     //   - 3 color channels - GL_RGB
     //   - 4 color channels - GL_RGBA
+    int glChannels;
+    if (channels == 1) {
+        glChannels = GL_RED;
+    } else if (channels == 2) {
+        glChannels = GL_RG;
+    } else if (channels == 3) {
+        glChannels = GL_RGB;
+    } else if (channels == 4) {
+        glChannels = GL_RGBA;
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, glChannels, width, height, 0, glChannels, GL_UNSIGNED_BYTE, data);
 
     // TODO(student): Generate texture mip-maps
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     CheckOpenGLError();
 
@@ -177,6 +195,17 @@ Texture2D *Lab08::CreateStripedTexture()
     // TODO(student): Generate the information for a striped image,
     // where all the pixels on the same line have the same color.
     // The color of the pixels of a line is chosen randomly.
+    for (int i = 0; i < height; i++) {
+        unsigned char r = rand() % 255;
+        unsigned char g = rand() % 255;
+        unsigned char b = rand() % 255;
+        for (int j = 0; j < width; j++) {
+            int index = i * width * 3 + j * 3;
+            data[index + 0] = r;
+            data[index + 1] = g;
+            data[index + 2] = b;
+        }
+    }
 
 
     return CreateTexture(width, height, channels, data);
@@ -200,7 +229,7 @@ void Lab08::Update(float deltaTimeSeconds)
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(1, 1, -3));
         modelMatrix = glm::scale(modelMatrix, glm::vec3(2));
-        RenderSimpleMesh(meshes["sphere"], shaders["LabShader"], modelMatrix, mapTextures["earth"]);
+        RenderSimpleMesh(meshes["sphere"], shaders["LabShader04"], modelMatrix, mapTextures["earth"]);
     }
 
     {
@@ -208,7 +237,7 @@ void Lab08::Update(float deltaTimeSeconds)
         modelMatrix = glm::translate(modelMatrix, glm::vec3(2, 0.5f, 0));
         modelMatrix = glm::rotate(modelMatrix, RADIANS(60.0f), glm::vec3(1, 0, 0));
         modelMatrix = glm::scale(modelMatrix, glm::vec3(0.75f));
-        RenderSimpleMesh(meshes["box"], shaders["LabShader"], modelMatrix, mapTextures["crate"], mapTextures["striped"]);
+        RenderSimpleMesh(meshes["box"], shaders["LabShader03"], modelMatrix, mapTextures["crate"], mapTextures["striped"]);
     }
 
     {
@@ -237,7 +266,7 @@ void Lab08::Update(float deltaTimeSeconds)
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.1, -15));
         modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3f));
-        RenderSimpleMesh(meshes["plane"], shaders["LabShader"], modelMatrix, mapTextures["ground"], mapTextures["noise"]);
+        RenderSimpleMesh(meshes["plane"], shaders["LabShader05"], modelMatrix, mapTextures["ground"], mapTextures["noise"]);
     }
 }
 
@@ -271,6 +300,9 @@ void Lab08::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelM
     glUniformMatrix4fv(loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
     // TODO(student): Set any other shader uniforms that you need
+    if (strcmp(shader->GetName(), "LabShader04") == 0) {
+        glUniform1f(glGetUniformLocation(shader->program, "time"), Engine::GetElapsedTime());
+    }
 
     if (texture1)
     {
@@ -278,7 +310,9 @@ void Lab08::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelM
         // - activate texture location 0
         // - bind the texture1 ID
         // - send theuniform value
-
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1->GetTextureID());
+        glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
     }
 
     if (texture2)
@@ -287,7 +321,9 @@ void Lab08::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelM
         // - activate texture location 1
         // - bind the texture2 ID
         // - send the uniform value
-
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2->GetTextureID());
+        glUniform1i(glGetUniformLocation(shader->program, "texture_2"), 1);
     }
 
     // Draw the object
