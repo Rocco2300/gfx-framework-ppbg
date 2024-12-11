@@ -112,7 +112,7 @@ vec3 SpotLight()
         // TODO(student): Multiply the shadow factor with the
         // result of the lighting calculation. Don't apply
         // this factor to the ambient component as well.
-        return light_att_factor * light_intensity * PhongLight() + KA;
+        return light_att_factor * light_intensity * PhongLight() * ShadowFactor() + KA;
     }
 
     return KA;
@@ -123,7 +123,7 @@ float VolumetricIllumination()
     vec3 ray_direction = world_position - eye_position;
 
     int illuminated_samples_count = 0;
-    int sample_count = 0;
+    int sample_count = 100;
 
     vec3 point_position = eye_position;
     // TODO(student): Sample several hundreds of points between the
@@ -131,6 +131,13 @@ float VolumetricIllumination()
     // point rendered in the current fragment. Quantify the number of
     // sampled points that are illuminated by the spot light source,
     // IsIlluminated() and the number of sampled points in total.
+    float dist = distance(point_position, world_position);
+    for (int i = 0; i < sample_count; i++) {
+        point_position = point_position + i * (dist / sample_count) * normalize(ray_direction);
+        if (IsIlluminated(point_position, 0.0001f)) {
+            illuminated_samples_count += 1;
+        }
+    }
 
 
     float scattering = ComputeScattering(dot(normalize(ray_direction), light_direction));
