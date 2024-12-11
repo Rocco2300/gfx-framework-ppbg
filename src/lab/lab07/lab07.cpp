@@ -270,6 +270,8 @@ void Lab07::OnInputUpdate(float deltaTime, int mods)
         forward = glm::normalize(glm::vec3(forward.x, 0, forward.z));
 
         glm::vec3* light_position = nullptr;
+        glm::vec3* light_direction = nullptr;
+        float* angle = nullptr;
 
         if (controlled_light_source_index == 0) {
             light_position = &point_light_positions[9];
@@ -277,6 +279,8 @@ void Lab07::OnInputUpdate(float deltaTime, int mods)
 
         if (controlled_light_source_index == 1) {
             light_position = &spot_light_positions[9];
+            light_direction = &spot_light_directions[9];
+            angle = &spot_light_angles[9];
         }
 
         // Control light position using on W, A, S, D, E, Q
@@ -286,6 +290,27 @@ void Lab07::OnInputUpdate(float deltaTime, int mods)
         if (window->KeyHold(GLFW_KEY_D)) (*light_position) += right * deltaTime * speed;
         if (window->KeyHold(GLFW_KEY_E)) (*light_position) += up * deltaTime * speed;
         if (window->KeyHold(GLFW_KEY_Q)) (*light_position) -= up * deltaTime * speed;
+
+        if (light_direction) {
+            static float oxAngle = 0.f;
+            static float ozAngle = 0.f;
+
+            auto mat = glm::mat4(1.f);
+            if (window->KeyHold(GLFW_KEY_J)) {
+                oxAngle = 1.f * deltaTime;
+                mat *= glm::rotate(mat, oxAngle, glm::vec3(1, 0, 0));
+            }
+            if (window->KeyHold(GLFW_KEY_L)) {
+                ozAngle = 1.f * deltaTime;
+                mat *= glm::rotate(mat, ozAngle, glm::vec3(0, 0, 1));
+            }
+
+            if (window->KeyHold(GLFW_KEY_K)) {
+                *angle += 1.f * deltaTime;
+            }
+
+            *light_direction = mat * glm::vec4(*light_direction, 1);
+        }
     }
 
     {
