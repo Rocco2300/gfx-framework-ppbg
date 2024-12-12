@@ -123,7 +123,7 @@ float VolumetricIllumination()
     vec3 ray_direction = world_position - eye_position;
 
     int illuminated_samples_count = 0;
-    int sample_count = 100;
+    int sample_count = 500;
 
     vec3 point_position = eye_position;
     // TODO(student): Sample several hundreds of points between the
@@ -131,10 +131,10 @@ float VolumetricIllumination()
     // point rendered in the current fragment. Quantify the number of
     // sampled points that are illuminated by the spot light source,
     // IsIlluminated() and the number of sampled points in total.
-    float dist = distance(point_position, world_position);
+    vec3 ray_step = ray_direction / sample_count;
     for (int i = 0; i < sample_count; i++) {
-        point_position = point_position + i * (dist / sample_count) * normalize(ray_direction);
-        if (IsIlluminated(point_position, 0.0001f)) {
+        vec3 sample_pos = point_position + float(i) * ray_step;
+        if (IsIlluminated(sample_pos, 0.0001f)) {
             illuminated_samples_count += 1;
         }
     }
