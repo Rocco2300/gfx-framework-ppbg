@@ -11,6 +11,7 @@ layout(location = 1) in vec2 v_texture_coord[];
 uniform mat4 View;
 uniform mat4 Projection;
 // TODO(student): Declare other uniforms here
+uniform float time;
 
 // Output
 layout(location = 0) out vec2 texture_coord;
@@ -23,6 +24,22 @@ void main()
 	//   - The coordinate of the vertex in clip space, transformed
 	//     from world space, as received from the vertex shader
 	//   - Texture coordinate received from the vertex shader.
+    for (int i = 0; i < 5; i++) {
+        vec4 offset = vec4(float(i), 0.0, float(i), 0.0);
 
+        gl_Position = Projection * View * (gl_in[0].gl_Position + offset);
+        texture_coord = v_texture_coord[0];
+        EmitVertex();
 
+        gl_Position = Projection * View * (gl_in[1].gl_Position + offset);
+        texture_coord = v_texture_coord[1];
+        EmitVertex();
+
+        gl_Position = Projection * View * (gl_in[2].gl_Position + offset);
+        texture_coord = v_texture_coord[2];
+        EmitVertex();
+
+        EndPrimitive();
+    }
 }
+

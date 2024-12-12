@@ -12,6 +12,7 @@ layout(location = 0) out vec4 out_color;
 void main()
 {
     // TODO(student): Apply the texture
+    vec4 color = texture(texture_1, texture_coord);
 
-    out_color = vec4(1, 0, 0, 1);
+    out_color = color;
 }
