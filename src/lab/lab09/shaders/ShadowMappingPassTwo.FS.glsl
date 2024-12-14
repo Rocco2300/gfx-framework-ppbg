@@ -123,7 +123,7 @@ float VolumetricIllumination()
     vec3 ray_direction = world_position - eye_position;
 
     int illuminated_samples_count = 0;
-    int sample_count = 500;
+    int sample_count = 100;
 
     vec3 point_position = eye_position;
     // TODO(student): Sample several hundreds of points between the

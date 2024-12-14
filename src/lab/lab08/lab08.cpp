@@ -49,6 +49,16 @@ void Lab08::Init()
     }
 
     {
+        Texture2D* texture = LoadTexture("src\\lab\\lab08\\images\\snow.jpg");
+        mapTextures["snow"] = texture;
+    }
+
+    {
+        Texture2D* texture = LoadTexture("src\\lab\\lab08\\images\\water.jpg");
+        mapTextures["water"] = texture;
+    }
+
+    {
         Texture2D* texture = LoadTexture("assets\\models\\vegetation\\bamboo\\bamboo.png");
         mapTextures["bamboo"] = texture;
     }
@@ -325,6 +335,14 @@ void Lab08::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelM
         glBindTexture(GL_TEXTURE_2D, texture2->GetTextureID());
         glUniform1i(glGetUniformLocation(shader->program, "texture_2"), 1);
     }
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, mapTextures["snow"]->GetTextureID());
+    glUniform1i(glGetUniformLocation(shader->program, "texture_3"), 2);
+
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, mapTextures["water"]->GetTextureID());
+    glUniform1i(glGetUniformLocation(shader->program, "texture_4"), 3);
 
     // Draw the object
     glBindVertexArray(mesh->GetBuffers()->m_VAO);
