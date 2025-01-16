@@ -36,7 +36,7 @@ void main()
     uv = (uv + 50.0) / 100.0;
 
     float height = texture(noiseTex, uv).r * 6.0;
-    position.y += height + 0.3;
+    position.y += height + 0.15;
 
     vec3 hPos = heliPos;
     hPos.y += height + 2.0;
